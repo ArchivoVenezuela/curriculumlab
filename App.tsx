@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import { AppStep, AppMode, Pillar, Variation, Course } from "./types";
 import { Loading } from "./components/Loading";
 import { CourseView } from "./components/CourseView";
-import { Sparkles, ArrowRight, BookOpen, PlayCircle, Zap, ZapOff, Eye, Layers } from "lucide-react";
+import { Sparkles, ArrowRight, BookOpen, PlayCircle, Zap, ZapOff, Eye, Layers, Download } from "lucide-react";
 import { mockCourse } from "./mockCourse";
 import { APP_DESCRIPTION, APP_CREDITS } from "./src/constants/metadata";
 
@@ -159,6 +159,42 @@ const App: React.FC = () => {
     [appMode, selectedPillar]
   );
 
+  // Export functions for early stages
+  const exportPillars = () => {
+    const data = {
+      topic,
+      pillars,
+      exportedAt: new Date().toISOString(),
+      exportedWith: "CurriculumLab"
+    };
+    const jsonString = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${topic.replace(/\s+/g, '_')}_pilares.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportVariations = () => {
+    const data = {
+      topic,
+      pillar: selectedPillar,
+      variations,
+      exportedAt: new Date().toISOString(),
+      exportedWith: "CurriculumLab"
+    };
+    const jsonString = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${topic.replace(/\s+/g, '_')}_variaciones.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   // ─── RENDER HELPERS ─────────────────────────────────────
 
   const renderStepOne = () => (
@@ -232,6 +268,18 @@ const App: React.FC = () => {
           </p>
         </div>
       )}
+      
+      {/* Export Button for Pillars */}
+      <div className="mb-6 flex justify-end">
+        <button
+          onClick={exportPillars}
+          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-colors shadow-sm"
+        >
+          <Download className="w-4 h-4" />
+          Descargar Pilares (JSON)
+        </button>
+      </div>
+
       <div className="grid md:grid-cols-2 gap-4">
         {pillars.map((p) => (
           <button
@@ -259,6 +307,18 @@ const App: React.FC = () => {
           </p>
         </div>
       )}
+      
+      {/* Export Button for Variations */}
+      <div className="mb-6 flex justify-end">
+        <button
+          onClick={exportVariations}
+          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-colors shadow-sm"
+        >
+          <Download className="w-4 h-4" />
+          Descargar Variaciones (JSON)
+        </button>
+      </div>
+
       <div className="grid md:grid-cols-3 gap-4">
         {variations.map((v) => (
           <button

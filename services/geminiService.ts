@@ -115,7 +115,46 @@ Genera un curso completo con 4 a 6 módulos.
             items: { type: Type.STRING }
           },
           colorPalette: { type: Type.STRING },
-          modules: { type: Type.ARRAY }
+          modules: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                id: { type: Type.INTEGER },
+                title: { type: Type.STRING },
+                subtitle: { type: Type.STRING },
+                description: { type: Type.STRING },
+                keyPoints: {
+                  type: Type.ARRAY,
+                  items: { type: Type.STRING }
+                },
+                visualPrompt: { type: Type.STRING },
+                quiz: {
+                  type: Type.ARRAY,
+                  items: {
+                    type: Type.OBJECT,
+                    properties: {
+                      question: { type: Type.STRING },
+                      options: {
+                        type: Type.ARRAY,
+                        items: {
+                          type: Type.OBJECT,
+                          properties: {
+                            text: { type: Type.STRING },
+                            label: { type: Type.STRING }
+                          },
+                          required: ["text", "label"]
+                        }
+                      },
+                      correctLabel: { type: Type.STRING }
+                    },
+                    required: ["question", "options", "correctLabel"]
+                  }
+                }
+              },
+              required: ["id", "title", "subtitle", "description", "keyPoints", "quiz"]
+            }
+          }
         },
         required: ["title", "description", "modules"]
       }

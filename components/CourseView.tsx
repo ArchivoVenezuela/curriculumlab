@@ -467,8 +467,8 @@ export const CourseView: React.FC<CourseViewProps> = ({ course, onBack }) => {
 
       <div className="max-w-5xl mx-auto pb-20 px-4">
       {/* Header */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-6 mt-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-4 flex gap-2">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-6 mt-6 relative overflow-visible">
+        <div className="absolute top-0 right-0 p-4 flex gap-2 z-50">
             <div className="relative">
                 <button 
                   onClick={() => setShowExportMenu(!showExportMenu)}
@@ -711,6 +711,25 @@ const OverviewTab: React.FC<{ course: Course; onExportClick: () => void }> = ({ 
       <p className="text-slate-600 italic border-l-4 border-indigo-200 pl-4 py-1">
         "{course.colorPalette}"
       </p>
+    </div>
+
+    {/* Modules Grid */}
+    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+      <h3 className="flex items-center text-lg font-semibold text-slate-800 mb-6">
+        <BookOpen className="w-5 h-5 mr-2 text-indigo-600" />
+        Módulos del Curso
+      </h3>
+      <div className="grid md:grid-cols-2 gap-4">
+        {course.modules.map((mod, idx) => (
+          <div
+            key={idx}
+            className="p-5 border border-slate-200 rounded-lg hover:border-indigo-300 hover:shadow-md transition-all bg-white"
+          >
+            <h4 className="font-bold text-slate-900 mb-2">{mod.title}</h4>
+            <p className="text-sm text-slate-600 leading-relaxed">{mod.description}</p>
+          </div>
+        ))}
+      </div>
     </div>
   </div>
 );

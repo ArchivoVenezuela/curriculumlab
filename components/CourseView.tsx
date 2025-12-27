@@ -638,7 +638,10 @@ export const CourseView: React.FC<CourseViewProps> = ({ course, onBack }) => {
         {/* Main Content */}
         <div className="lg:w-3/4">
           {activeTab === 'overview' ? (
-            <OverviewTab course={course} />
+            <OverviewTab 
+              course={course} 
+              onExportClick={() => setShowExportMenu(true)} 
+            />
           ) : (
             <ModuleTab 
               module={course.modules[activeTab as number]} 
@@ -660,8 +663,23 @@ export const CourseView: React.FC<CourseViewProps> = ({ course, onBack }) => {
   );
 };
 
-const OverviewTab: React.FC<{ course: Course }> = ({ course }) => (
+const OverviewTab: React.FC<{ course: Course; onExportClick: () => void }> = ({ course, onExportClick }) => (
   <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    {/* Export Button - Prominent at top */}
+    <div className="bg-indigo-50 border-2 border-indigo-200 rounded-xl p-4 flex items-center justify-between">
+      <div>
+        <h3 className="font-semibold text-indigo-900 mb-1">¿Listo para exportar tu curso?</h3>
+        <p className="text-sm text-indigo-700">Descarga el curso completo para Canvas, sitio web estático, o formato JSON</p>
+      </div>
+      <button
+        onClick={onExportClick}
+        className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition-colors shadow-md whitespace-nowrap"
+      >
+        <Download className="w-5 h-5" />
+        Exportar Curso
+      </button>
+    </div>
+    
     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
       <h3 className="flex items-center text-lg font-semibold text-slate-800 mb-4">
         <Target className="w-5 h-5 mr-2 text-indigo-600" />

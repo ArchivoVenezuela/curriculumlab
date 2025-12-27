@@ -2,15 +2,16 @@ import React, { useState, useCallback, useEffect } from "react";
 import { AppStep, AppMode, Pillar, Variation, Course } from "./types";
 import { Loading } from "./components/Loading";
 import { CourseView } from "./components/CourseView";
-import { Sparkles, ArrowRight, BookOpen, PlayCircle, Zap, ZapOff, Eye } from "lucide-react";
+import { Sparkles, ArrowRight, BookOpen, PlayCircle, Zap, ZapOff, Eye, Layers } from "lucide-react";
 import { mockCourse } from "./mockCourse";
 import { APP_DESCRIPTION, APP_CREDITS } from "./src/constants/metadata";
 
 const App: React.FC = () => {
   // ─── STATE ──────────────────────────────────────────────
-  const [appMode, setAppMode] = useState<AppMode>("demo"); // Start in demo mode
+  const [appMode, setAppMode] = useState<AppMode>("ai"); // Start in AI mode
   const [step, setStep] = useState<AppStep>(AppStep.TOPIC_INPUT);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [topic, setTopic] = useState("");
   const [pillars, setPillars] = useState<Pillar[]>([]);
@@ -30,6 +31,7 @@ const App: React.FC = () => {
 
   const switchMode = (newMode: AppMode) => {
     setAppMode(newMode);
+    setError(null); // Clear errors when switching modes
     
     // Reset state when switching modes
     setStep(AppStep.TOPIC_INPUT);
@@ -66,6 +68,8 @@ const App: React.FC = () => {
       e.preventDefault();
       if (!topic.trim()) return;
       
+      setError(null); // Clear previous errors
+      
       // Only call AI if mode is "ai"
       if (appMode === "ai") {
         setIsLoading(true);
@@ -74,10 +78,17 @@ const App: React.FC = () => {
           const data = await generatePillars(topic);
           setPillars(data);
           setStep(AppStep.PILLAR_SELECTION);
+          setError(null);
         } catch (error) {
           console.error("Error generando los pilares:", error);
-          // Show error inline, not as alert
-          alert("Error generando los pilares. Verifica que tengas una API key configurada.");
+          const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+          
+          // Check if it's an API key error
+          if (errorMessage.includes("VITE_GEMINI_API_KEY") || errorMessage.includes("API key")) {
+            setError("API key no configurada. Para usar el Modo IA, configura la variable de entorno VITE_GEMINI_API_KEY en Vercel (Settings → Environment Variables).");
+          } else {
+            setError(`Error generando los pilares: ${errorMessage}`);
+          }
         } finally {
           setIsLoading(false);
         }
@@ -89,6 +100,7 @@ const App: React.FC = () => {
 
   const handlePillarSelect = useCallback(async (pillar: Pillar) => {
     setSelectedPillar(pillar);
+    setError(null);
     
     // Only call AI if mode is "ai"
     if (appMode === "ai") {
@@ -98,9 +110,15 @@ const App: React.FC = () => {
         const data = await generateVariations(pillar);
         setVariations(data);
         setStep(AppStep.VARIATION_SELECTION);
+        setError(null);
       } catch (error) {
         console.error("Error generando variaciones:", error);
-        alert("Error generando variaciones.");
+        const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+        if (errorMessage.includes("VITE_GEMINI_API_KEY") || errorMessage.includes("API key")) {
+          setError("API key no configurada. Configura VITE_GEMINI_API_KEY en Vercel.");
+        } else {
+          setError(`Error generando variaciones: ${errorMessage}`);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -111,6 +129,7 @@ const App: React.FC = () => {
   const handleVariationSelect = useCallback(
     async (variation: Variation) => {
       if (!selectedPillar) return;
+      setError(null);
 
       // Only call AI if mode is "ai"
       if (appMode === "ai") {
@@ -120,9 +139,15 @@ const App: React.FC = () => {
           const data = await generateCourse(variation, selectedPillar);
           setCourse(data);
           setStep(AppStep.COURSE_VIEW);
+          setError(null);
         } catch (error) {
           console.error("Error generando el curso:", error);
-          alert("Error generando el curso.");
+          const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+          if (errorMessage.includes("VITE_GEMINI_API_KEY") || errorMessage.includes("API key")) {
+            setError("API key no configurada. Configura VITE_GEMINI_API_KEY en Vercel.");
+          } else {
+            setError(`Error generando el curso: ${errorMessage}`);
+          }
         } finally {
           setIsLoading(false);
         }
@@ -180,37 +205,73 @@ const App: React.FC = () => {
           </p>
         </div>
       )}
+      
+      {/* Error message display */}
+      {error && (
+        <div className="mt-6 p-4 bg-red-50 border border-red-300 rounded-lg max-w-xl">
+          <p className="text-sm text-red-800 text-center leading-relaxed">
+            <strong>Error:</strong> {error}
+          </p>
+          <p className="text-xs text-red-600 mt-2 text-center">
+            Para configurar la API key en Vercel: Settings → Environment Variables → Add VITE_GEMINI_API_KEY
+          </p>
+        </div>
+      )}
     </div>
   );
 
   const renderStepTwo = () => (
-    <div className="max-w-6xl mx-auto px-4 py-8 grid md:grid-cols-2 gap-4">
-      {pillars.map((p) => (
-        <button
-          key={p.id}
-          onClick={() => handlePillarSelect(p)}
-          className="p-6 border rounded-xl text-left hover:border-indigo-600"
-        >
-          <h3 className="font-bold">{p.title}</h3>
-          <p className="text-sm text-slate-600">{p.description}</p>
-        </button>
-      ))}
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-300 rounded-lg">
+          <p className="text-sm text-red-800 leading-relaxed">
+            <strong>Error:</strong> {error}
+          </p>
+          <p className="text-xs text-red-600 mt-2">
+            Para configurar la API key en Vercel: Settings → Environment Variables → Add VITE_GEMINI_API_KEY
+          </p>
+        </div>
+      )}
+      <div className="grid md:grid-cols-2 gap-4">
+        {pillars.map((p) => (
+          <button
+            key={p.id}
+            onClick={() => handlePillarSelect(p)}
+            className="p-6 border rounded-xl text-left hover:border-indigo-600"
+          >
+            <h3 className="font-bold">{p.title}</h3>
+            <p className="text-sm text-slate-600">{p.description}</p>
+          </button>
+        ))}
+      </div>
     </div>
   );
 
   const renderStepThree = () => (
-    <div className="max-w-6xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-4">
-      {variations.map((v) => (
-        <button
-          key={v.id}
-          onClick={() => handleVariationSelect(v)}
-          className="p-6 border rounded-xl text-left hover:border-indigo-600"
-        >
-          <Layers className="mb-2 text-indigo-600" />
-          <h3 className="font-bold">{v.title}</h3>
-          <p className="text-sm text-slate-600">{v.focus}</p>
-        </button>
-      ))}
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-300 rounded-lg">
+          <p className="text-sm text-red-800 leading-relaxed">
+            <strong>Error:</strong> {error}
+          </p>
+          <p className="text-xs text-red-600 mt-2">
+            Para configurar la API key en Vercel: Settings → Environment Variables → Add VITE_GEMINI_API_KEY
+          </p>
+        </div>
+      )}
+      <div className="grid md:grid-cols-3 gap-4">
+        {variations.map((v) => (
+          <button
+            key={v.id}
+            onClick={() => handleVariationSelect(v)}
+            className="p-6 border rounded-xl text-left hover:border-indigo-600"
+          >
+            <Layers className="mb-2 text-indigo-600" />
+            <h3 className="font-bold">{v.title}</h3>
+            <p className="text-sm text-slate-600">{v.focus}</p>
+          </button>
+        ))}
+      </div>
     </div>
   );
 

@@ -465,129 +465,91 @@ export const CourseView: React.FC<CourseViewProps> = ({ course, onBack }) => {
         </div>
       )}
 
+      {/* Fixed Export Button - Always Visible */}
+      <div className="fixed top-20 right-4 z-50">
+        <div className="relative">
+          <button 
+            onClick={() => setShowExportMenu(!showExportMenu)}
+            className="flex items-center gap-2 px-5 py-3 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-colors shadow-lg"
+          >
+            <Download className="w-5 h-5" />
+            Exportar Curso
+            <ChevronDown className={`w-4 h-4 transition-transform ${showExportMenu ? 'rotate-180' : ''}`} />
+          </button>
+          
+          {showExportMenu && (
+            <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-xl shadow-xl z-[60] py-2 animate-in fade-in zoom-in-95 duration-200">
+              <div className="px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 mb-1">
+                Publicación Web
+              </div>
+              <button 
+                onClick={() => {
+                  exportToStaticSite();
+                  setShowExportMenu(false);
+                }} 
+                className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-indigo-50 flex items-center gap-3 group"
+              >
+                <Globe className="w-4 h-4 text-indigo-500" />
+                <div className="flex-1">
+                  <div className="font-medium">Exportar como sitio web</div>
+                  <div className="text-xs text-slate-500">ZIP con HTML completo y módulos</div>
+                </div>
+              </button>
+              
+              <div className="px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider border-t border-slate-100 mt-1 mb-1">
+                Canvas LMS
+              </div>
+              <button 
+                onClick={() => {
+                  exportToCanvas();
+                  setShowExportMenu(false);
+                }} 
+                className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-indigo-50 flex items-center gap-3 group"
+              >
+                <GraduationCap className="w-4 h-4 text-purple-500" />
+                <div className="flex-1">
+                  <div className="font-medium">Exportar para Canvas</div>
+                  <div className="text-xs text-slate-500">ZIP con módulos listos para Canvas</div>
+                </div>
+              </button>
+              
+              <div className="px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider border-t border-slate-100 mt-1 mb-1">
+                Formatos de Datos
+              </div>
+              <button 
+                onClick={() => {
+                  exportToJson();
+                  setShowExportMenu(false);
+                }} 
+                className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
+              >
+                <FileJson className="w-4 h-4 text-orange-500" />
+                <div className="flex-1">
+                  <div className="font-medium">JSON (.json)</div>
+                  <div className="text-xs text-slate-500">Datos estructurados del curso</div>
+                </div>
+              </button>
+              <button 
+                onClick={() => {
+                  exportToMarkdown();
+                  setShowExportMenu(false);
+                }} 
+                className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
+              >
+                <FileText className="w-4 h-4 text-blue-500" />
+                <div className="flex-1">
+                  <div className="font-medium">Markdown (.md)</div>
+                  <div className="text-xs text-slate-500">Documentación y versionado</div>
+                </div>
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className="max-w-5xl mx-auto pb-20 px-4">
       {/* Header */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-6 mt-6 relative overflow-visible">
-        <div className="absolute top-0 right-0 p-4 flex gap-2 z-50">
-            <div className="relative">
-                <button 
-                  onClick={() => setShowExportMenu(!showExportMenu)}
-                  className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-colors shadow-sm"
-                >
-                  <Download className="w-4 h-4" />
-                  Publicar curso
-                  <ChevronDown className={`w-4 h-4 transition-transform ${showExportMenu ? 'rotate-180' : ''}`} />
-                </button>
-                
-                {showExportMenu && (
-                    <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-xl shadow-xl z-[60] py-2 animate-in fade-in zoom-in-95 duration-200">
-                        <div className="px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 mb-1">
-                            Publicación Web
-                        </div>
-                        <button 
-                          onClick={() => {
-                            exportToStaticSite();
-                            setShowExportMenu(false);
-                          }} 
-                          className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-indigo-50 flex items-center gap-3 group"
-                        >
-                          <Globe className="w-4 h-4 text-indigo-500" />
-                          <div className="flex-1">
-                            <div className="font-medium">Exportar como sitio web</div>
-                            <div className="text-xs text-slate-500">ZIP con HTML completo y módulos</div>
-                          </div>
-                        </button>
-                        
-                        <div className="px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider border-t border-slate-100 mt-1 mb-1">
-                            Canvas LMS
-                        </div>
-                        <button 
-                          onClick={() => {
-                            exportToCanvas();
-                            setShowExportMenu(false);
-                          }} 
-                          className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-indigo-50 flex items-center gap-3 group"
-                        >
-                          <GraduationCap className="w-4 h-4 text-purple-500" />
-                          <div className="flex-1">
-                            <div className="font-medium">Exportar para Canvas</div>
-                            <div className="text-xs text-slate-500">ZIP con módulos listos para Canvas</div>
-                          </div>
-                        </button>
-                        
-                        <div className="px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider border-t border-slate-100 mt-1 mb-1">
-                            Formatos de Datos
-                        </div>
-                        <button 
-                          onClick={() => {
-                            exportToJson();
-                            setShowExportMenu(false);
-                          }} 
-                          className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
-                        >
-                          <FileJson className="w-4 h-4 text-orange-500" />
-                          <div className="flex-1">
-                            <div className="font-medium">JSON (.json)</div>
-                            <div className="text-xs text-slate-500">Datos estructurados del curso</div>
-                          </div>
-                        </button>
-                        <button 
-                          onClick={() => {
-                            exportToMarkdown();
-                            setShowExportMenu(false);
-                          }} 
-                          className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
-                        >
-                          <FileText className="w-4 h-4 text-blue-500" />
-                          <div className="flex-1">
-                            <div className="font-medium">Markdown (.md)</div>
-                            <div className="text-xs text-slate-500">Documentación y versionado</div>
-                          </div>
-                        </button>
-                        
-                        {typeof activeTab === 'number' && (
-                            <>
-                                <div className="border-t border-slate-100 my-1"></div>
-                                <div className="px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
-                                    Módulo Actual (Standalone)
-                                </div>
-                                <button 
-                                  onClick={() => {
-                                    exportModuleToMarkdown(activeTab as number);
-                                    setShowExportMenu(false);
-                                  }} 
-                                  className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
-                                >
-                                  <FileText className="w-4 h-4 text-green-500" />
-                                  <span>Markdown (.md)</span>
-                                </button>
-                                <button 
-                                  onClick={() => {
-                                    exportModuleToJson(activeTab as number);
-                                    setShowExportMenu(false);
-                                  }} 
-                                  className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
-                                >
-                                  <FileJson className="w-4 h-4 text-orange-500" />
-                                  <span>JSON (.json)</span>
-                                </button>
-                                <button 
-                                  onClick={() => {
-                                    exportModuleToHTML(activeTab as number);
-                                    setShowExportMenu(false);
-                                  }} 
-                                  className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
-                                >
-                                  <FileText className="w-4 h-4 text-purple-500" />
-                                  <span>HTML Standalone (.html)</span>
-                                </button>
-                            </>
-                        )}
-                    </div>
-                )}
-            </div>
-        </div>
-
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-6 mt-6">
         <button 
           onClick={onBack}
           className="flex items-center text-sm text-slate-500 hover:text-indigo-600 mb-6 transition-colors"

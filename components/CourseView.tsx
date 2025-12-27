@@ -48,6 +48,23 @@ export const CourseView: React.FC<CourseViewProps> = ({ course, onBack }) => {
     }
   }, [activeTab, course.modules]);
 
+  // Close export menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (showExportMenu && !target.closest('.export-menu-container')) {
+        setShowExportMenu(false);
+      }
+    };
+
+    if (showExportMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [showExportMenu]);
+
   const downloadFile = (content: string, fileName: string, contentType: string) => {
     const a = document.createElement("a");
     const file = new Blob([content], { type: contentType });
@@ -466,11 +483,16 @@ export const CourseView: React.FC<CourseViewProps> = ({ course, onBack }) => {
       )}
 
       {/* Fixed Export Button - Always Visible */}
-      <div className="fixed top-20 right-4 z-50">
+      <div className="fixed top-20 right-4 z-[9999] export-menu-container" style={{ position: 'fixed' }}>
         <div className="relative">
           <button 
-            onClick={() => setShowExportMenu(!showExportMenu)}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowExportMenu(!showExportMenu);
+            }}
             className="flex items-center gap-2 px-5 py-3 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-colors shadow-lg"
+            style={{ pointerEvents: 'auto' }}
           >
             <Download className="w-5 h-5" />
             Exportar Curso
@@ -478,7 +500,11 @@ export const CourseView: React.FC<CourseViewProps> = ({ course, onBack }) => {
           </button>
           
           {showExportMenu && (
-            <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-xl shadow-xl z-[60] py-2 animate-in fade-in zoom-in-95 duration-200">
+            <div 
+              className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-xl shadow-xl py-2"
+              style={{ zIndex: 10000 }}
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 mb-1">
                 Publicación Web
               </div>

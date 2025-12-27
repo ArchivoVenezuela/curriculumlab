@@ -483,7 +483,15 @@ export const CourseView: React.FC<CourseViewProps> = ({ course, onBack }) => {
       )}
 
       {/* Fixed Export Button - Always Visible */}
-      <div className="fixed top-20 right-4 z-[9999] export-menu-container" style={{ position: 'fixed' }}>
+      <div 
+        className="fixed top-20 right-4 z-[9999] export-menu-container" 
+        style={{ 
+          position: 'fixed',
+          top: '80px',
+          right: '16px',
+          zIndex: 9999
+        }}
+      >
         <div className="relative">
           <button 
             onClick={(e) => {
@@ -492,7 +500,12 @@ export const CourseView: React.FC<CourseViewProps> = ({ course, onBack }) => {
               setShowExportMenu(!showExportMenu);
             }}
             className="flex items-center gap-2 px-5 py-3 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-colors shadow-lg"
-            style={{ pointerEvents: 'auto' }}
+            style={{ 
+              pointerEvents: 'auto',
+              display: 'flex',
+              visibility: 'visible',
+              opacity: 1
+            }}
           >
             <Download className="w-5 h-5" />
             Exportar Curso

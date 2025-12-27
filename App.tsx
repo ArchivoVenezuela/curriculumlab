@@ -143,10 +143,14 @@ const App: React.FC = () => {
         } catch (error) {
           console.error("Error generando el curso:", error);
           const errorMessage = error instanceof Error ? error.message : "Error desconocido";
-          if (errorMessage.includes("VITE_GEMINI_API_KEY") || errorMessage.includes("API key")) {
+          
+          // Check for quota errors
+          if (errorMessage.includes("429") || errorMessage.includes("quota") || errorMessage.includes("RESOURCE_EXHAUSTED")) {
+            setError("Cuota de API excedida. El plan gratuito de Gemini tiene límites diarios. Por favor, espera unos minutos o actualiza tu plan en Google AI Studio. Mientras tanto, puedes descargar las variaciones en formato JSON para explorarlas.");
+          } else if (errorMessage.includes("VITE_GEMINI_API_KEY") || errorMessage.includes("API key")) {
             setError("API key no configurada. Configura VITE_GEMINI_API_KEY en Vercel.");
           } else {
-            setError(`Error generando el curso: ${errorMessage}`);
+            setError(`Error generando el curso: ${errorMessage.substring(0, 200)}`);
           }
         } finally {
           setIsLoading(false);

@@ -89,7 +89,8 @@ export const generateCourse = async (
   variation: Variation,
   pillar: Pillar
 ): Promise<Course> => {
-  const model = "gemini-3-pro-preview";
+  // Use flash model for better quota limits (gemini-1.5-flash has better free tier limits)
+  const model = "gemini-1.5-flash";
 
   const prompt = `
 El usuario ha elegido la variación "${variation.title}" (${variation.focus})
@@ -168,7 +169,7 @@ Genera un curso completo con 4 a 6 módulos.
 // --- Step 4: Generate Curaduría Workshop Course ---
 
 export const generateCuraduriaWorkshopCourse = async (): Promise<Course> => {
-  const model = "gemini-3-pro-preview";
+  const model = "gemini-1.5-flash";
 
   const prompt = `
 Desarrolla un curso de curaduría concebido como un taller de integración y preparación para el proyecto final.
